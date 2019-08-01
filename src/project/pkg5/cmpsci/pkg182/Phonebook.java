@@ -1,43 +1,47 @@
 package project.pkg5.cmpsci.pkg182;
 
-import java.io.BufferedReader;
-import java.io.*;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import java.io.FileWriter;  
 
 /**
  * Project 5
  * Programmer: Austin Smith
  * Source Code: Phonebook
  * Due Date: 05/08/18
- * Description: An ADT that contains methods for the Menu class to use
+ * Description: An ADT (BST) that contains methods for the Menu class to use
  */
 public class Phonebook {
-    Person root;
+    Person root = null;
+    private boolean exists;
     public void Add(String name, long number) {
+        try{
         root = AddRecursive(root, name, number);
+        }
+        catch (Exception ex) {
+            System.out.println("Could not add to phonebook");
+        }
     } 
-    public Person AddRecursive(Person curr, String name, long number) {
+    private Person AddRecursive(Person curr, String name, long number) {
         if(curr == null) {
             return new Person(name, number);
         }
-        if(name.charAt(0) < curr.name.charAt(0)) {
+        if(root.name.compareToIgnoreCase(name) > 0) {
             curr.leftChild = AddRecursive(curr.leftChild, name, number);
         }
-        else if(name.charAt(0) > curr.name.charAt(0)) {
+        else if(root.name.compareToIgnoreCase(name) < 0) {
             curr.rightChild = AddRecursive(curr.rightChild, name, number);
         }
-        else if(name.charAt(0) == curr.name.charAt(0)) {
-            if(name.charAt(1) < curr.name.charAt(1)) {
-                curr.leftChild = AddRecursive(curr.leftChild, name, number);
-            }
+        else if(root.name.compareToIgnoreCase(name) == 0 || root.name.equalsIgnoreCase(name) == true) {
+            System.out.println("Name is already in phonebook");
         }
         return curr;
     }
     public void Delete(String name) {
-        root = DeleteRecursive(root, name);
+        if (name == null) {
+            System.out.println("Enter a name to delete");
+        }
+        else
+            root = DeleteRecursive(root, name);
     }
     Person DeleteRecursive(Person root, String name) {
         if (root == null) { 
@@ -69,18 +73,27 @@ public class Phonebook {
         }
         return minv;
     }
-    public void Find(String name) {
-        System.out.println(FindRecursive(root, name).number);
-        
+    public long Find(String name) {
+            long num = FindRecursive(root, name).number;
+            return num;
     }
-    public Person FindRecursive(Person curr, String name) throws NumberNotFoundException {
+    public String Find_name(String name) {
+        String names = FindRecursive(root, name).name;
+        return names;
+    }
+   // public Person Find_Person(String name) {
+          //  return FindRecursive(root, name);
+    //}
+    private Person FindRecursive(Person curr, String name) throws NumberNotFoundException {
+        exists = false;
         if (curr.name.compareTo(name) > 0) {
             return FindRecursive(curr.leftChild, name);
             }
         else if (curr.name.compareTo(name) < 0) {
             return FindRecursive(curr.rightChild, name);
         }
-        else if (curr.name.compareTo(name) == 0) {
+        else if (curr.name.equalsIgnoreCase(name)) {
+            exists = true;
             return curr;
         }
         else{ 
@@ -90,31 +103,31 @@ public class Phonebook {
     public void Change(String name, long newPhone) {
         FindRecursive(root, name).number = newPhone;
     }
-    public void TraverseInOrder(Person root) {
-    if (root != null) {
-        TraverseInOrder(root.leftChild);
-        System.out.print(" " + root.name);
-        System.out.println(" " + root.number);
-        TraverseInOrder(root.rightChild);
+    private void TraverseInOrder(Person root, FileWriter fw) { //Now this is traversing in order entered, not alphabetic
+        try{    
+            if (root == null) {
+                return;
+            }
+        TraverseInOrder(root.leftChild,fw);
+        fw.write(root.name);
+        fw.write("\n");
+        fw.write(Long.toString(root.number));
+        fw.write("\n");
+        fw.write("\n");
+        TraverseInOrder(root.rightChild,fw);
+            
         }
+        catch(Exception e){System.out.println(e);}    
     }
     
     public void Quit() throws FileNotFoundException {
-        try {
-        File outputFile = new File("Phonebook Out.txt");
-        PrintWriter output = new PrintWriter(outputFile);
-      
-        output.println(root.leftChild.name);
-        output.println(root.leftChild.number);
-        output.println(root.name);
-        output.println(root.number);
-        output.println(root.rightChild.name);
-        output.println(root.rightChild.number);
-        
-        output.close();
-        }
-        catch(FileNotFoundException e) {
-            System.out.println("Phonebook Out.txt cannot be found. " + e.toString());
-        }
-    }
+        try{    
+            try (FileWriter fw = new FileWriter("D:\\phonebook.txt")) { 
+                if (root != null) {
+                    TraverseInOrder(root,fw);
+                }
+            }    
+          }catch(Exception e){System.out.println(e);}    
+          System.out.println("Success...");    
+     }    
 }

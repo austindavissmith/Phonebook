@@ -5,32 +5,57 @@
  */
 package project.pkg5.cmpsci.pkg182;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+
 /**
  *
  * @author Textbook
  */
-class Person<T, L> {
+class Person {
   long number;
   String name;
-  Person<T, L> leftChild;
-  Person<T, L> rightChild;
+  Person leftChild;
+  Person rightChild;
+  final SimpleStringProperty nListView;
+  final SimpleStringProperty pnListView;
 
-  public Person(String newName, long newNumber) {
+  Person(String newName, long newNumber) {
   // Initializes tree node with item and no children.
     number = newNumber;
     name = newName;
     leftChild  = null;
     rightChild = null;
+    this.nListView = new SimpleStringProperty(newName);
+    this.pnListView = new SimpleStringProperty(Long.toString(newNumber));
+    
   }  // end constructor
 
-  public Person(String newName, long newNumber,
-                  Person<T, L> left, Person<T, L> right) {
+  Person(String newName, long newNumber,
+                  Person left, Person right) {
   // Initializes tree node with item and
   // the left and right children references.
     number = newNumber;
     name = newName;
     leftChild  = left;
     rightChild = right;
+    this.nListView = new SimpleStringProperty(newName);
+    this.pnListView = new SimpleStringProperty(Long.toString(newNumber));
   }  // end constructor
-
+    
+  String getName() {
+    return nListView.get();
+  }
+ 
+  void setName(String fName) {
+    nListView.set(fName);
+    }
+ 
+  String getNumber() {
+    return pnListView.get();
+    }
+ 
+  void setNumber(long number) {
+    pnListView.set(Long.toString(number));
+    }
 }  // end TreeNode
